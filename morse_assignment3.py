@@ -21,14 +21,29 @@ def Build_Character_Encoder():
     # CodeList2 contains Morse codes of the 10 integers from 0 to 9
     CodeList2 = ['-----', '.----', '..---', '...--', '....-', '.....',
                  '-....', '--...', '---..', '----.']
+
+    CodeList3 = [
+        '.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-',
+        '.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-',
+        '.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-',
+        ".-.-.-",".-.-.-"
+    ]
+
     # define three lists of characters
     #hint: try the following lines in console, see what they do
     CharList1 = list('abcdefghijklmnopqrstuvwxyz')
     CharList2 = list('0123456789')
     CharList3 = list("""`~!@#$%^&*()-_=+[{]}\|;:'",<.>/?""")
+
     # define an empty dictionary
     Character_Encoder={}
     # add your code from here
+
+    Tot_CharactersList = CharList1 + CharList2 + CharList3
+    Tot_Code = CodeList1 + CodeList2 + CodeList3
+
+    for n in range(0, len(Tot_CharactersList)):
+        Character_Encoder[Tot_CharactersList[n]]=Tot_Code[n]
     
     return Character_Encoder
 #%%
@@ -44,6 +59,39 @@ def Build_Character_Decoder():
              Character_Decoder['.-.-.-']  is '#'
     '''
     # add your code from here
+     # CodeList1 contains Morse codes of the 26 English letters (a to z)
+    CodeList1 = ['.-','-...','-.-.','-..','.','..-.','--.','....','..',
+                 '.---','-.-','.-..','--','-.','---','.--.','--.-','.-.',
+                 '...','-','..-','...-','.--','-..-','-.--','--..']
+    # CodeList2 contains Morse codes of the 10 integers from 0 to 9
+    CodeList2 = ['-----', '.----', '..---', '...--', '....-', '.....',
+                 '-....', '--...', '---..', '----.']
+
+    CodeList3 = [
+        '.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-',
+        '.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-',
+        '.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-','.-.-.-',
+        ".-.-.-",".-.-.-"
+    ]
+
+    # define three lists of characters
+    #hint: try the following lines in console, see what they do
+    CharList1 = list('abcdefghijklmnopqrstuvwxyz')
+    CharList2 = list('0123456789')
+    CharList3 = list("""`~!@#$%^&*()-_=+[{]}\|;:'",<.>/?""")
+
+    # defining my dictionary for the Character decoder
+    Character_Decoder = {}
+
+    # Adding all Characters & Code
+    Tot_CharactersList = CharList1 + CharList2 + CharList3
+    Tot_Code = CodeList1 + CodeList2 + CodeList3
+
+    for n in range(0, len(Tot_Code)):
+        Character_Decoder[Tot_Code[n]]=Tot_CharactersList[n]
+
+    # Remember since all special symbols _()*&_%^... etc have the same code ".-.-.-" we will assign all to '#' when decoding
+    Character_Decoder['.-.-.-']="#"
 
     return Character_Decoder
 # %%
@@ -61,6 +109,15 @@ def Word_Encoder(Word, Character_Encoder=None):
         Character_Encoder = Build_Character_Encoder()
     # add your code from here
 
+    Word = Word.lower().rstrip()
+    Word = list(Word)
+    
+    Word_in_Morse_Code = ''
+
+    for ch in Word:
+        encoded_char = Character_Encoder[ch]
+        Word_in_Morse_Code += encoded_char + ' '
+
     return Word_in_Morse_Code
 # %%
 def Word_Decoder(Word_in_Morse_Code, Character_Decoder=None):
@@ -75,6 +132,19 @@ def Word_Decoder(Word_in_Morse_Code, Character_Decoder=None):
     if Character_Decoder == None:
         Character_Decoder = Build_Character_Decoder()
     # add your code from here
+    
+    # Account for white spaces
+    print(Word_in_Morse_Code)
+
+    Word_in_Morse_Code = Word_in_Morse_Code.rstrip().lower()
+    Word_in_Morse_Code = Word_in_Morse_Code.split(' ')
+    Word = ''
+
+    print(Word_in_Morse_Code)
+
+    for ch in Word_in_Morse_Code:
+        decoded_word = Character_Decoder[ch]
+        Word += decoded_word
 
     return Word
 # %%
@@ -101,6 +171,18 @@ def Message_Encoder(Message, Character_Encoder=None):
         Character_Encoder = Build_Character_Encoder()
     # add your code from here
 
+    Message_in_Morse_Code = ''
+
+    Message = Message.lower().rstrip()
+    Message = Message.split(' ')
+
+    for word in Message:
+        for ch in list(word):
+            encoded_char = Character_Encoder[ch]
+            Message_in_Morse_Code += encoded_char + ' '
+        Message_in_Morse_Code += ','
+
+
     return Message_in_Morse_Code
 # %%
 def Message_Decoder(Message_in_Morse_Code, Character_Decoder=None):
@@ -116,6 +198,20 @@ def Message_Decoder(Message_in_Morse_Code, Character_Decoder=None):
     if Character_Decoder == None:
         Character_Decoder = Build_Character_Decoder()
     # add your code from here
+
+    Message_in_Morse_Code = Message_in_Morse_Code.rstrip().split(',')
+    Message_in_Morse_Code.pop()
+    print(Message_in_Morse_Code)
+
+    Message = ''
+
+    for coded_word in Message_in_Morse_Code:
+        for code in coded_word.rstrip().split(' '):
+            decoded_char = Character_Decoder[code]
+            Message += decoded_char
+        Message += ' '
+
+    Message = Message.rstrip()
 
     return Message
 # %% you do not need to modify this function
@@ -149,6 +245,8 @@ def Make_Sound(Message_in_Morse_Code):
         else: # unknown character '#'
             winsound.Beep(2*frequence, 3*duration)
 # %% you do not need to modify this function
+
+# %% ------------------------------ NOT NEEDED ------------------------------ %%
 def Send_Message(play_sound = False):
     '''
     a bonus function to send an 'encrypted' message (Morse Code)
